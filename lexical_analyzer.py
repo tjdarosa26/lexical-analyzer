@@ -5,165 +5,21 @@
 # Tool used to convert RegEx to DFA: https://jack-q.github.io/reg2dfa/
 #
 # Transition tables are based on the DFA from the tool, using regex as 
-# input (but adapted, due to tool limitations).
+# input (but they were adapted, due to tool limitations on regex use).
 #
 ##########################################################################
 
 import sys
 
-# the transition_table_general is used to catch identifiers, numbers and all other terminal symbols, but not reserved words.
-transition_table_general = [
-#    a       b       c       d       e       f       g       h       i       j       k       l       m       n       o       p       q       r       s       t       u       v       w       x       y       z       A       B       C       D       E       F       G       H       I       J       K       L       M       N       O       P       Q       R       S       T       U       V       W       X       Y       Z       _       0       1       2       3       4       5       6       7       8       9       (       )       {       }       ;       =       ,       <       >       +       -       *
-    [2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  False,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  5    ,  6    ,  7    ,  8    ,  9    ,  1    ,  10   ,  11   ,  12   ,  13   ,  14   ,  15   ], #0
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  3    ,  False,  False,  False,  False,  False,  False], #1
-    [2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #2
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #3
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #4
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #5
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #6
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #7
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #8
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #9
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #10
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #11
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #12
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #13
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #14
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False]  #15
+from automatas.general_automata import \
+    transition_table as general_transition_table, \
+    acceptance_states as general_acceptance_states, \
+    symbols_dict as general_symbols_dict
+from automatas.keywords_automata import \
+    transition_table as keywords_transition_table, \
+    acceptance_states as keywords_acceptance_states, \
+    symbols_dict as keywords_symbols_dict 
 
-]
-
-# acceptance states for transition_table_general 
-acceptance_states_general = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-
-
-# the transition_table_keywords is used to catch reserved words after they were identified as identifiers.
-transition_table_keywords = [
-#    d       e       p       r       f       l       s       i       n       t       u 
-    [1    ,  2    ,  4    ,  5    ,  False,  False,  False,  3    ,  False,  False,  False], #0
-    [False,  6    ,  False,  False,  False,  False,  False,  False,  False,  False,  False], #1
-    [False,  False,  False,  False,  False,  7    ,  False,  False,  False,  False,  False], #2
-    [False,  False,  False,  False,  25    ,  False,  False,  False,  9    ,  False,  False], #3
-    [False,  False,  False,  10   ,  False,  False,  False,  False,  False,  False,  False], #4
-    [False,  11   ,  False,  False,  False,  False,  False,  False,  False,  False,  False], #5
-    [False,  False,  False,  False,  23   ,  False,  False,  False,  False,  False,  False], #6
-    [False,  False,  False,  False,  False,  False,  13   ,  False,  False,  False,  False], #7
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #8
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  24   ,  False], #9
-    [False,  False,  False,  False,  False,  False,  False,  15   ,  False,  False,  False], #10
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  16   ,  False], #11
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #12
-    [False,  17   ,  False,  False,  False,  False,  False,  False,  False,  False,  False], #13
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #14
-    [False,  False,  False,  False,  False,  False,  False,  False,  18   ,  False,  False], #15
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  19   ], #16
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #17
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  20   ,  False], #18
-    [False,  False,  False,  21   ,  False,  False,  False,  False,  False,  False,  False], #19
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #20
-    [False,  False,  False,  False,  False,  False,  False,  False,  22   ,  False,  False], #21
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #22
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #23
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False], #24
-    [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False]  #25
-]
-
-# acceptance states for transition_table_keywords
-acceptance_states_keywords = [17,20,22,23,24,25]
-
-# symbols dictionary for transition_table_general
-symbols_dict_general = {
-    "a": 0,
-    "b": 1,
-    "c": 2,
-    "d": 3,
-    "e": 4,
-    "f": 5,
-    "g": 6,
-    "h": 7,
-    "i": 8,
-    "j": 9,
-    "k": 10,
-    "l": 11,
-    "m": 12,
-    "n": 13,
-    "o": 14,
-    "p": 15,
-    "q": 16,
-    "r": 17,
-    "s": 18,
-    "t": 19,
-    "u": 20,
-    "v": 21,
-    "w": 22,
-    "x": 23,
-    "y": 24,
-    "z": 25,
-    "A": 26,
-    "B": 27,
-    "C": 28,
-    "D": 29,
-    "E": 30,
-    "F": 31,
-    "G": 32,
-    "H": 33,
-    "I": 34,
-    "J": 35,
-    "K": 36,
-    "L": 37,
-    "M": 38,
-    "N": 39,
-    "O": 40,
-    "P": 41,
-    "Q": 42,
-    "R": 43,
-    "S": 44,
-    "T": 45,
-    "U": 46,
-    "V": 47,
-    "W": 48,
-    "X": 49,
-    "Y": 50,
-    "Z": 51,
-    "_": 52,
-    "0": 53,
-    "1": 54,
-    "2": 55,
-    "3": 56,
-    "4": 57,
-    "5": 58,
-    "6": 59,
-    "7": 60,
-    "8": 61,
-    "9": 62,
-    "(": 63,
-    ")": 64,
-    "{": 65,
-    "}": 66,
-    ";": 67,
-    "=": 68,
-    ",": 69,
-    "<": 70,
-    ">": 71,
-    "+": 72,
-    "-": 73,
-    "*": 74
-}
-
-# symbols dictionary for transition_table_keywords
-symbols_dict_keywords = {
-    "d": 0,
-    "e": 1,
-    "p": 2,
-    "r": 3,
-    "f": 4,
-    "l": 5,
-    "s": 6,
-    "i": 7,
-    "n": 8,
-    "t": 9,
-    "u": 10
-}
 
 def main(input_file_name):
     
@@ -190,7 +46,7 @@ def main(input_file_name):
             # tries to advance to next state
             try:
                 previous_state = actual_state
-                actual_state = transition_table_general[actual_state][symbols_dict_general[actual_symbol]]
+                actual_state = general_transition_table[actual_state][general_symbols_dict[actual_symbol]]
 
             # KeyError means that the symbol that is actually being processed is not in symbols_dict 
             except KeyError:
@@ -200,7 +56,7 @@ def main(input_file_name):
                 # formed until now on the tokens_list
                 if (
                     (actual_symbol in ignored_symbols)
-                    and (previous_state in acceptance_states_general)
+                    and (previous_state in general_acceptance_states)
                 ): 
                     processed_token = process_token(actual_token, previous_state)
                     tokens_list.append(processed_token)
@@ -219,7 +75,7 @@ def main(input_file_name):
                 # it just goes to the next iteration (an example is when two ignored_symbols come one after the other)
                 elif (
                     (actual_symbol in ignored_symbols)
-                    and (previous_state not in acceptance_states_general)
+                    and (previous_state not in general_acceptance_states)
                 ):
                     column += 1
                     
@@ -246,7 +102,7 @@ def main(input_file_name):
                 # but previous state was valid, appends token to tokens_list and restarts from state 0
                 # without going to next iteration
                 # [an example is when a '(' symbol arrives after a 't' and the actual token is 'int']
-                if previous_state in acceptance_states_general: 
+                if previous_state in general_acceptance_states: 
                     processed_token = process_token(actual_token, previous_state)
                     tokens_list.append(processed_token)
                     actual_token = ''
@@ -269,7 +125,7 @@ def main(input_file_name):
             i += 1
             
         # if the while loop ended at acceptance state, adds the last token to tokens_list
-        if actual_state in acceptance_states_general:
+        if actual_state in general_acceptance_states:
             processed_token = process_token(actual_token, actual_state)
             tokens_list.append(processed_token)
         
@@ -294,11 +150,11 @@ def process_token(actual_token, previous_state):
                 actual_symbol = actual_token[i]
 
                 try:
-                    actual_state = transition_table_keywords[actual_state][symbols_dict_keywords[actual_symbol]]
+                    actual_state = keywords_transition_table[actual_state][keywords_symbols_dict[actual_symbol]]
                 except KeyError:
                     token_type = 'identifier'
                 
-                if actual_state in acceptance_states_keywords:
+                if actual_state in keywords_acceptance_states:
                     processed_token = process_token(actual_token, actual_state)
                     return processed_token
                 
