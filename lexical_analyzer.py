@@ -1,7 +1,5 @@
 ##########################################################################
 #
-# TIAGO JOSÉ DA ROSA - 20200637
-#
 # LEXICAL ANALYZER
 #
 # Tool used to convert RegEx to DFA: https://jack-q.github.io/reg2dfa/
@@ -13,8 +11,8 @@
 
 import sys
 
-# the transition_table_1 is used to catch identifiers, numbers and all other terminal symbols, but not reserved words.
-transition_table_1 = [
+# the transition_table_general is used to catch identifiers, numbers and all other terminal symbols, but not reserved words.
+transition_table_general = [
 #    a       b       c       d       e       f       g       h       i       j       k       l       m       n       o       p       q       r       s       t       u       v       w       x       y       z       A       B       C       D       E       F       G       H       I       J       K       L       M       N       O       P       Q       R       S       T       U       V       W       X       Y       Z       _       0       1       2       3       4       5       6       7       8       9       (       )       {       }       ;       =       ,       <       >       +       -       *
     [2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  2    ,  False,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  4    ,  5    ,  6    ,  7    ,  8    ,  9    ,  1    ,  10   ,  11   ,  12   ,  13   ,  14   ,  15   ], #0
     [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  3    ,  False,  False,  False,  False,  False,  False], #1
@@ -35,12 +33,12 @@ transition_table_1 = [
 
 ]
 
-# acceptance states for transition_table_1 
-acceptance_states1 = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+# acceptance states for transition_table_general 
+acceptance_states_general = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
 
-# the transition_table_2 is used to catch reserved words after they were identified as identifiers.
-transition_table_2 = [
+# the transition_table_keywords is used to catch reserved words after they were identified as identifiers.
+transition_table_keywords = [
 #    d       e       p       r       f       l       s       i       n       t       u 
     [1    ,  2    ,  4    ,  5    ,  False,  False,  False,  3    ,  False,  False,  False], #0
     [False,  6    ,  False,  False,  False,  False,  False,  False,  False,  False,  False], #1
@@ -70,11 +68,11 @@ transition_table_2 = [
     [False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False]  #25
 ]
 
-# acceptance states for transition_table_2
-acceptance_states2 = [17,20,22,23,24,25]
+# acceptance states for transition_table_keywords
+acceptance_states_keywords = [17,20,22,23,24,25]
 
-# symbols dictionary for transition_table_1
-symbols_dict1 = {
+# symbols dictionary for transition_table_general
+symbols_dict_general = {
     "a": 0,
     "b": 1,
     "c": 2,
@@ -152,8 +150,8 @@ symbols_dict1 = {
     "*": 74
 }
 
-# symbols dictionary for transition_table_2
-symbols_dict2 = {
+# symbols dictionary for transition_table_keywords
+symbols_dict_keywords = {
     "d": 0,
     "e": 1,
     "p": 2,
@@ -192,7 +190,7 @@ def main(input_file_name):
             # tries to advance to next state
             try:
                 previous_state = actual_state
-                actual_state = transition_table_1[actual_state][symbols_dict1[actual_symbol]]
+                actual_state = transition_table_general[actual_state][symbols_dict_general[actual_symbol]]
 
             # KeyError means that the symbol that is actually being processed is not in symbols_dict 
             except KeyError:
@@ -202,7 +200,7 @@ def main(input_file_name):
                 # formed until now on the tokens_list
                 if (
                     (actual_symbol in ignored_symbols)
-                    and (previous_state in acceptance_states1)
+                    and (previous_state in acceptance_states_general)
                 ): 
                     processed_token = process_token(actual_token, previous_state)
                     tokens_list.append(processed_token)
@@ -221,7 +219,7 @@ def main(input_file_name):
                 # it just goes to the next iteration (an example is when two ignored_symbols come one after the other)
                 elif (
                     (actual_symbol in ignored_symbols)
-                    and (previous_state not in acceptance_states1)
+                    and (previous_state not in acceptance_states_general)
                 ):
                     column += 1
                     
@@ -248,7 +246,7 @@ def main(input_file_name):
                 # but previous state was valid, appends token to tokens_list and restarts from state 0
                 # without going to next iteration
                 # [an example is when a '(' symbol arrives after a 't' and the actual token is 'int']
-                if previous_state in acceptance_states1: 
+                if previous_state in acceptance_states_general: 
                     processed_token = process_token(actual_token, previous_state)
                     tokens_list.append(processed_token)
                     actual_token = ''
@@ -271,7 +269,7 @@ def main(input_file_name):
             i += 1
             
         # if the while loop ended at acceptance state, adds the last token to tokens_list
-        if actual_state in acceptance_states1:
+        if actual_state in acceptance_states_general:
             processed_token = process_token(actual_token, actual_state)
             tokens_list.append(processed_token)
         
@@ -296,11 +294,11 @@ def process_token(actual_token, previous_state):
                 actual_symbol = actual_token[i]
 
                 try:
-                    actual_state = transition_table_2[actual_state][symbols_dict2[actual_symbol]]
+                    actual_state = transition_table_keywords[actual_state][symbols_dict_keywords[actual_symbol]]
                 except KeyError:
                     token_type = 'identifier'
                 
-                if actual_state in acceptance_states2:
+                if actual_state in acceptance_states_keywords:
                     processed_token = process_token(actual_token, actual_state)
                     return processed_token
                 
@@ -367,13 +365,16 @@ def process_token(actual_token, previous_state):
     return (token_type, actual_token)
 
 
-# cacthes first argument and passes it to main function, that tries to use it as input file name
 if __name__ == '__main__':
+
+    # cacthes first argument and passes it to main function, that tries to use it as input file name
     args = sys.argv
-    if len(args) == 1:
+    if len(args) < 2:
         print('Inform a file name (with extension, if it has) as first command line argument!')
-    else:
+    elif len(args) == 2:
         input_file_name = sys.argv[1]
         main(input_file_name)
+    elif len(args) > 2:
+        print('This program takes exactly one argument, which is a file name (with extension, if it has).')
 
 
