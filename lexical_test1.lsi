@@ -1,0 +1,18 @@
+int important_number;
+int very_important_number;
+int even_more_important_number;   
+int greatest_variable_ever;
+
+def Brilliant_Function(int something){
+    print(something + -1 - +2 * 0);
+    return;
+}
+
+very_important_number = 789;
+even_more_important_number = 987;
+
+greatest_variable_ever = (
+    even_more_important_number - greatest_variable_ever * _important_number
+);
+
+Brilliant_Function(very_important_number)

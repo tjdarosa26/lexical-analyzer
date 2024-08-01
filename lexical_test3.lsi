@@ -1,0 +1,20 @@
+int first_number = (100 * 100);
+int second_number = (100 * 100) + 1;
+
+def increase_by_one(int number){
+    number = number + 1;
+    print(number)
+    return;
+}
+
+def decrease_by_one(int number){
+    number = number - 1$
+    print(number);
+    return;
+}
+
+if (first_number > second_number){
+    print(0)
+} else {
+    print(1)
+}
