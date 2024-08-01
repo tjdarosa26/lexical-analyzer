@@ -8,7 +8,7 @@ def increase_by_one(int number){
 }
 
 def decrease_by_one(int number){
-    number = number - 1$
+    number = number - 1
     print(number);
     return;
 }
