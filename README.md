@@ -4,10 +4,14 @@ This was a college project for the discipline of Introduction to Compilers, wher
 
 The accepted tokens are:
 
-- identifiers, caracterized by the following RegEx: `([a-z]|[A-Z])([a-z]|[A-Z]|[0-9]|_)*`
-- numbers (integers), caracterized by the following RegEx: `(+|-)?([0-9])*`
-- reserved words: `def else if int print return`
-- symbols: `( ) { } ; = , > < + - *`
+- identifiers, caracterized by the following RegEx: 
+- `([a-z]|[A-Z])([a-z]|[A-Z]|[0-9]|_)*`
+- numbers (integers), caracterized by the following RegEx: 
+- `(+|-)?([0-9])*`
+- reserved words: 
+- `def else if int print return`
+- symbols: 
+- `( ) { } ; = , > < + - *`
 
 ## How to execute the Lexical Analyzer
 
